@@ -1,6 +1,7 @@
 package com.greate43.sk.infosysassement.view.adapter
 
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import java.util.*
 class FactsAdapter(context: Context) : RecyclerView.Adapter<FactsAdapter.FactsHolder>() {
     private val mContext = context
     private var data = Collections.emptyList<Rows>()
-
+    private var TAG = FactsAdapter::class.java.simpleName
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FactsHolder {
         return FactsHolder(
             LayoutInflater
@@ -57,21 +58,56 @@ class FactsAdapter(context: Context) : RecyclerView.Adapter<FactsAdapter.FactsHo
             }
 
             if (rows.imageHref != null && rows.imageHref.isNotEmpty()) {
+                // caching image using glide
                 val requestOptions = RequestOptions()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                GlideApp.with(context).load(rows.imageHref)
-                    .apply(requestOptions)
-                    .centerInside()
-                    .error(context.resources.getDrawable(R.drawable.no_image))
-                    .placeholder(context.resources.getDrawable(R.drawable.ic_image_black_24dp))
-                    .into(itemView.findViewById(R.id.imageHref))
+                loadImage(context, rows, requestOptions)
+
             } else {
-                GlideApp.with(context).load(context.resources.getDrawable(R.drawable.no_image))
-                    .centerInside()
-                    .into(itemView.findViewById(R.id.imageHref))
+                noImage(context)
             }
 
 
+        }
+
+        // if file does not exists on tbe server  then glide will throw an exception and show a error image
+        private fun loadImage(
+            context: Context,
+            rows: Rows,
+            requestOptions: RequestOptions
+        ) {
+            GlideApp.with(context).load(rows.imageHref)
+                .apply(requestOptions)
+                .centerInside()
+                .error(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        context.resources.getDrawable(R.drawable.no_image, null)
+                    } else {
+                        context.resources.getDrawable(R.drawable.no_image)
+
+                    }
+                )
+                .placeholder(
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        context.resources.getDrawable(R.drawable.ic_image_black_24dp, null)
+                    } else {
+                        context.resources.getDrawable(R.drawable.ic_image_black_24dp)
+                    }
+                )
+                .into(itemView.findViewById(R.id.imageHref))
+        }
+
+        private fun noImage(context: Context) {
+            GlideApp.with(context).load(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    context.resources.getDrawable(R.drawable.no_image, null)
+                } else {
+                    context.resources.getDrawable(R.drawable.no_image)
+
+                }
+            )
+                .centerInside()
+                .into(itemView.findViewById(R.id.imageHref))
         }
     }
 
