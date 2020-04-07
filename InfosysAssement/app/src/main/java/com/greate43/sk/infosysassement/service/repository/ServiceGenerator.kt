@@ -20,9 +20,10 @@ object ServiceGenerator {
 
     private val retrofitBuilder: Retrofit.Builder = Retrofit.Builder()
         .baseUrl(BASE_URL)
-        .client(okHttpClient()!!)
-        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .client(okHttpClient())
+       .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
+
 
     private val retrofit = retrofitBuilder.build()
 
@@ -33,7 +34,8 @@ object ServiceGenerator {
     }
 
 
-    private fun okHttpClient(): OkHttpClient? {
+
+    private fun okHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .cache(cache())
             .addInterceptor(httpLoggingInterceptor()) // used if network off OR on

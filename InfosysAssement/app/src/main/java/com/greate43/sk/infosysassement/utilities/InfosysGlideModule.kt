@@ -9,7 +9,5 @@ import com.bumptech.glide.module.AppGlideModule
 
 @GlideModule
 class InfosysGlideModule : AppGlideModule() { // leave empty for now
-    override fun applyOptions(context: Context, builder: GlideBuilder) {
-        builder.setLogLevel(Log.VERBOSE)
-    }
+
 }

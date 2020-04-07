@@ -3,4 +3,8 @@
     <string name="title_desc_temp">Murdochs needed counselling after hacking scandal , say magazine</string>
     <string name="description_lbl_temp">New York: The british phone-hacking scandal brought tension.</string>
     <string name="no_info">\"No Information available\"</string>
+    <string name="image">Image</string>
+    <string name="no_cache">No Data is Stored Offline</string>
+    <string name="no_internet">No Internet Available</string>
+
 </resources>
