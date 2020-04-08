@@ -21,7 +21,7 @@ object ServiceGenerator {
     private val retrofitBuilder: Retrofit.Builder = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(okHttpClient())
-       .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .addConverterFactory(GsonConverterFactory.create())
 
 
@@ -32,7 +32,6 @@ object ServiceGenerator {
     fun getRequestApi(): DropboxFactsApi {
         return requestApi
     }
-
 
 
     private fun okHttpClient(): OkHttpClient {

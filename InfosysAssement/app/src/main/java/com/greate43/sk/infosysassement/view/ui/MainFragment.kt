@@ -1,6 +1,7 @@
 package com.greate43.sk.infosysassement.view.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,7 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
-    private val viewModel by viewModels<FactsViewModel>()
+     val viewModel by viewModels<FactsViewModel>()
 
 
     override fun onCreateView(
@@ -57,6 +58,8 @@ class MainFragment : Fragment() {
         mainRecyclerView.adapter = adapter
         if (MyApplication.getInstance()?.hasNetwork()!!) {
             prefs.allowQuery = true
+        } else {
+            showToast(R.string.no_internet)
         }
 
         mainSwipeRefreshLayout.setOnRefreshListener {
@@ -71,7 +74,6 @@ class MainFragment : Fragment() {
             } else {
                 queryFacts()
             }
-            
             stopRefresh()
         }
 
@@ -86,12 +88,13 @@ class MainFragment : Fragment() {
         Toast.makeText(requireContext(), getString(id), Toast.LENGTH_SHORT).show()
     }
 
-    private fun queryFacts() {
+     fun queryFacts() {
         if (prefs.allowQuery) {
             viewModel.getFacts().observe(viewLifecycleOwner,
                 Observer { facts ->
                     activity?.title = facts?.title
                     facts.rows?.let { adapter.setData(it) }
+                    Log.d(TAG,"title: ${activity?.title}")
 
                 })
         }
