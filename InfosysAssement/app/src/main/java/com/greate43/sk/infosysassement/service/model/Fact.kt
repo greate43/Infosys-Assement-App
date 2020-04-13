@@ -1,9 +1,21 @@
 package com.greate43.sk.infosysassement.service.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-data class Fact(
+@Entity(tableName = "fact")
+class Fact {
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 
-    @SerializedName("title") val title: String?,
-    @SerializedName("rows") val rows: List<Rows>?
-)
+    @ColumnInfo(name = "title")
+    @SerializedName("title")
+    var title: String? = ""
+
+    @SerializedName("rows")
+    @Ignore
+    var rows: List<Rows>? = null
+}

@@ -26,16 +26,14 @@ class MainFragmentTest {
 
     @Before
     fun init() {
-        val fragmentArgs = Bundle()
-        val factory = MainFragmentFactory()
-        scenario = launchFragment<MainFragment>(fragmentArgs, R.style.AppTheme, factory)
+        scenario = launchFragment<MainFragment>()
     }
 
     @Test
     fun checkIfTitleHasTheData() {
         scenario.onFragment { mainFragment ->
             if (MyApplication.getInstance()?.hasNetwork()!!) {
-                mainFragment.viewModel.getFacts().observe(mainFragment.viewLifecycleOwner,
+                mainFragment.factsViewModel.getFacts().observe(mainFragment.viewLifecycleOwner,
                     androidx.lifecycle.Observer { facts ->
                         mainFragment.activity?.title = facts?.title
                         Log.d(TAG, "title: ${mainFragment.activity?.title}")
@@ -49,11 +47,11 @@ class MainFragmentTest {
     fun checkIfViewHolderIsDisplayed() {
         scenario.onFragment { mainFragment ->
             if (MyApplication.getInstance()?.hasNetwork()!!) {
-                mainFragment.viewModel.getFacts().observe(mainFragment.viewLifecycleOwner,
-                    androidx.lifecycle.Observer { facts ->
-                        facts.rows?.let { mainFragment.adapter.setData(it) }
+                mainFragment.factsViewModel.getRows().observe(mainFragment.viewLifecycleOwner,
+                    androidx.lifecycle.Observer { rows ->
+                        rows?.let { mainFragment.adapter.setData(it) }
 
-                        for (pos in 0 until facts.rows?.size!!)
+                        for (pos in 0 until rows?.size!!)
                         /* check if the ViewHolder is being displayed */
                             onView(RecyclerViewMatcher(R.id.mainRecyclerView)
                                     .atPositionOnView(pos, R.id.factsCardView))
@@ -66,25 +64,18 @@ class MainFragmentTest {
     @Test
     fun checkIfCacheIsWorking() {
         scenario.onFragment { mainFragment ->
-            if (MyApplication.getInstance()?.hasNetwork()!!) {
-                mainFragment.prefs.allowQuery = true
+            if (!MyApplication.getInstance()?.hasNetwork()!!) {
                 queryFacts(mainFragment)
-            }  else {
-                // if it has been online at least once then query facts from cache
-               if (mainFragment.prefs.allowQuery){
-                   queryFacts(mainFragment)
-               }
             }
         }
     }
 
     private fun queryFacts(mainFragment: MainFragment) {
-        mainFragment.viewModel.getFacts().observe(mainFragment.viewLifecycleOwner,
-            Observer { facts ->
-                mainFragment.activity?.title = facts?.title
-                facts.rows?.let { mainFragment.adapter.setData(it) }
+        mainFragment.factsViewModel.getRows().observe(mainFragment.viewLifecycleOwner,
+            Observer { rows ->
+                rows?.let { mainFragment.adapter.setData(it) }
 
-                for (pos in 0 until facts.rows?.size!!)
+                for (pos in 0 until rows?.size!!)
                 /* check if the ViewHolder is being displayed */
                     onView(RecyclerViewMatcher(R.id.mainRecyclerView)
                         .atPositionOnView(pos, R.id.factsCardView))

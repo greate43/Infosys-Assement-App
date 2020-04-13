@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.greate43.sk.infosysassement.MyApplication
 import com.greate43.sk.infosysassement.R
-import com.greate43.sk.infosysassement.utilities.Prefs
 import com.greate43.sk.infosysassement.view.adapter.FactsAdapter
 import com.greate43.sk.infosysassement.viewmodel.FactsViewModel
 import kotlinx.android.synthetic.main.main_fragment.*
@@ -24,13 +23,13 @@ class MainFragment : Fragment() {
     val TAG = MainFragment::class.java.simpleName
     lateinit var adapter: FactsAdapter
 
-    lateinit var prefs: Prefs
 
     companion object {
         fun newInstance() = MainFragment()
     }
 
-     val viewModel by viewModels<FactsViewModel>()
+    // change in orientation is handle by view model
+    val factsViewModel by viewModels<FactsViewModel>()
 
 
     override fun onCreateView(
@@ -42,7 +41,6 @@ class MainFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        prefs = Prefs(requireContext())
 
 
         mainRecyclerView.setHasFixedSize(true)
@@ -56,48 +54,38 @@ class MainFragment : Fragment() {
 
 
         mainRecyclerView.adapter = adapter
-        if (MyApplication.getInstance()?.hasNetwork()!!) {
-            prefs.allowQuery = true
-        } else {
-            showToast(R.string.no_internet)
-        }
+
 
         mainSwipeRefreshLayout.setOnRefreshListener {
-            if (MyApplication.getInstance()?.hasNetwork()!!) {
-                prefs.allowQuery = true
-            } else {
+            if (!MyApplication.getInstance()?.hasNetwork()!!) {
                 showToast(R.string.no_internet)
             }
 
-            if (!prefs.allowQuery) {
-                showToast(R.string.no_cache)
-            } else {
-                queryFacts()
-            }
+            queryFacts()
+
             stopRefresh()
         }
 
-        if (!prefs.allowQuery) {
-            showToast(R.string.no_cache)
-        } else {
-            queryFacts()
-        }
+
+        queryFacts()
+
     }
 
     private fun showToast(id: Int) {
         Toast.makeText(requireContext(), getString(id), Toast.LENGTH_SHORT).show()
     }
 
-     fun queryFacts() {
-        if (prefs.allowQuery) {
-            viewModel.getFacts().observe(viewLifecycleOwner,
-                Observer { facts ->
-                    activity?.title = facts?.title
-                    facts.rows?.let { adapter.setData(it) }
-                    Log.d(TAG,"title: ${activity?.title}")
+    private fun queryFacts() {
+        factsViewModel.getFacts().observe(viewLifecycleOwner,
+            Observer { facts ->
+                activity?.title = facts?.title
+                Log.d(TAG, "title: ${activity?.title}")
 
-                })
-        }
+            })
+        factsViewModel.getRows().observe(viewLifecycleOwner,
+            Observer { rows ->
+                adapter.setData(rows)
+            })
     }
 
     private fun stopRefresh() {

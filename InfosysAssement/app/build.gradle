@@ -30,7 +30,9 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-
+    packagingOptions {
+        exclude 'META-INF/atomicfu.kotlin_module'
+    }
 }
 
 dependencies {
@@ -68,6 +70,8 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.preference:preference-ktx:1.1.0'
+    implementation "androidx.room:room-runtime:2.2.5"
+    kapt "androidx.room:room-compiler:2.2.5" // For Kotlin use kapt instead of annotationProcessor
 
     androidTestImplementation('com.android.support.test.espresso:espresso-contrib:3.0.2')
     debugImplementation ("androidx.fragment:fragment-testing:1.2.4")
